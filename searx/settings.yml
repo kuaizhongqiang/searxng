@@ -49,11 +49,14 @@ valkey:
   url: false
 
 outgoing:
-  request_timeout: 3.0
+  request_timeout: 10.0
   useragent_suffix: ""
   pool_connections: 100
   pool_maxsize: 20
   enable_http2: true
+  # proxies:
+  #   all://:
+  #     - socks5://127.0.0.1:10808
 
 ui:
   static_path: ""
@@ -61,6 +64,12 @@ ui:
   default_theme: simple
   default_locale: ""
   cache_url: ""
+
+doi_resolvers:
+  oadoi.org: 'https://oadoi.org/'
+  doi.org: 'https://doi.org/'
+
+default_doi_resolver: 'oadoi.org'
 
 categories_as_tabs:
   general:
@@ -123,6 +132,7 @@ engines:
   - name: qwant
     engine: qwant
     shortcut: qw
+    qwant_categ: web
     timeout: 10.0
 
   - name: startpage
