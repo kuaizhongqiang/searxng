@@ -1,10 +1,9 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-"""Installer for SearXNG package."""
+"""Installer for SearXNG-core package (AgentWebSearchingTool fork)."""
 
 from setuptools import setup, find_packages
 
 from searx.version import VERSION_TAG, GIT_URL
-from searx import get_setting
 
 with open('README.rst', encoding='utf-8') as f:
     long_description = f.read()
@@ -12,20 +11,16 @@ with open('README.rst', encoding='utf-8') as f:
 with open('requirements.txt') as f:
     requirements = [l.strip() for l in f.readlines()]
 
-with open('requirements-dev.txt') as f:
-    dev_requirements = [l.strip() for l in f.readlines()]
-
 setup(
-    name='searxng',
-    description="SearXNG is a metasearch engine. Users are neither tracked nor profiled.",
+    name='searxng-core',
+    description="SearXNG-core: stripped metasearch engine for AgentWebSearchingTool",
     long_description=long_description,
     license="AGPL-3.0-or-later",
-    author='SearXNG',
-    author_email='contact@searxng.org',
+    author='SearXNG (forked by kuaizhongqiang)',
     python_requires=">=3.10",
     version=VERSION_TAG,
     keywords='metasearch searchengine search web http',
-    url=get_setting('brand.docs_url'),
+    url=GIT_URL,
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Topic :: Internet",
@@ -37,7 +32,7 @@ setup(
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3.13",
     ],
-    project_urls={"Code": GIT_URL, "Issue tracker": get_setting('brand.issue_url')},
+    project_urls={"Code": GIT_URL},
     entry_points={
         'console_scripts': ['searxng-run = searx.webapp:run']
     },
@@ -58,12 +53,7 @@ setup(
             'data/*.txt',
             'data/*.ftz',
             'favicons/*.toml',
-            'infopage/**',
-            'static/**',
-            'templates/**',
-            'translations/**',
         ],
     },
     install_requires=requirements,
-    extras_require={'test': dev_requirements},
 )
