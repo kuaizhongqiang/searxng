@@ -5,7 +5,10 @@ import typing
 import re
 from urllib.parse import parse_qsl
 
-from flask_babel import gettext
+try:
+    from flask_babel import gettext
+except ImportError:
+    gettext = lambda s: s  # noqa: E731
 from searx import get_setting
 from searx.plugins import Plugin, PluginInfo
 from searx.extended_types import sxng_request

@@ -6,8 +6,12 @@ import typing as t
 import unicodedata
 import re
 
-import flask_babel
-import babel
+try:
+    import flask_babel
+    import babel
+except ImportError:
+    flask_babel = None  # type: ignore[assignment]
+    babel = None  # type: ignore[assignment]
 
 from searx.data import CURRENCIES
 from .online import OnlineProcessor, OnlineParams

@@ -41,6 +41,12 @@ def init_settings():
 
     global settings, sxng_debug  # pylint: disable=global-variable-not-assigned
 
+    # Ensure required directories exist (SettingsDirectoryValue validates paths)
+    for _dir in ['static', 'templates']:
+        _path = os.path.join(searx_dir, _dir)
+        if not os.path.isdir(_path):
+            os.makedirs(_path, exist_ok=True)
+
     cfg, msg = settings_loader.load_settings(load_user_settings=True)
     cfg = cfg or {}
     apply_schema(cfg, SCHEMA, [])

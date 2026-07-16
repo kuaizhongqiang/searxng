@@ -14,10 +14,7 @@ import lxml.html
 from httpx import HTTPError
 
 from searx import settings
-from searx.engines import (
-    engines,
-    google,
-)
+from searx.engines import engines
 from searx.network import get as http_get, post as http_post
 from searx.exceptions import SearxEngineResponseException
 from searx.utils import extr, gen_useragent
@@ -134,6 +131,8 @@ def google_complete(query: str, sxng_locale: str) -> list[str]:
         https://{subdomain}/complete/search?{args}
 
     """
+
+    from searx.engines import google  # lazy — avoids babel dep at module level
 
     data = ENGINE_TRAITS.get("google") or {}
     traits = EngineTraits(**data)

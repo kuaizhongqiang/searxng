@@ -223,8 +223,8 @@ class PluginStorage:
                 log.exception(exc)
 
             if cls is None:
-                msg = f"plugin {fqn} is not implemented"
-                raise ValueError(msg)
+                log.warning("plugin %s is not available (skip)", fqn)
+                continue
             plg = cls(PluginCfg(**plg_settings))
             self.register(plg)
 

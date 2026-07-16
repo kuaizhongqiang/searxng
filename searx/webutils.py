@@ -17,7 +17,11 @@ from io import StringIO
 from codecs import getincrementalencoder
 
 import msgspec
-from flask_babel import gettext, format_date  # type: ignore
+try:
+    from flask_babel import gettext, format_date  # type: ignore
+except ImportError:
+    gettext = lambda s: s  # noqa: E731
+    format_date = lambda d, format='medium': str(d) if d else ''  # type: ignore[assignment]  # noqa: E731
 
 from searx import logger, get_setting
 

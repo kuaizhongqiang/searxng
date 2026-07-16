@@ -131,8 +131,8 @@ def load_engine(engine_data: dict[str, t.Any]) -> "Engine | types.ModuleType | N
     try:
         engine = load_module(module_name + '.py', ENGINE_DIR)
     except (SyntaxError, KeyboardInterrupt, SystemExit, SystemError, ImportError, RuntimeError):
-        logger.exception('Fatal exception in engine "{}"'.format(module_name))
-        sys.exit(1)
+        logger.warning('Skip engine "{}" (missing dependency)'.format(module_name))
+        return None
     except BaseException:
         logger.exception('Cannot load engine "{}"'.format(module_name))
         return None

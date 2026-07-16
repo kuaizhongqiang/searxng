@@ -2,7 +2,26 @@
 # pylint: disable=missing-module-docstring
 
 import typing
-import babel
+import types as _types
+try:
+    import babel
+    import babel.core
+except ImportError:
+    babel = _types.ModuleType('babel')
+    babel.core = type('core', (), {'UnknownLocaleError': ValueError})
+
+    class _Locale:
+        language: str = ''
+        territory: str = ''
+        @staticmethod
+        def parse(name: str, sep: str = '-') -> '_Locale':
+            parts = name.split(sep, 1)
+            loc = _Locale()
+            loc.language = parts[0]
+            if len(parts) > 1:
+                loc.territory = parts[1]
+            return loc
+    babel.Locale = _Locale  # type: ignore[assignment]
 
 
 class EngineRef:

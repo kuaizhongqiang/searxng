@@ -31,7 +31,10 @@ template.
 
 __all__ = ["AnswerSet", "Answer", "Translations", "WeatherAnswer"]
 
-from flask_babel import gettext
+try:
+    from flask_babel import gettext
+except ImportError:
+    gettext = lambda s: s  # noqa: E731
 import msgspec
 
 from searx import weather

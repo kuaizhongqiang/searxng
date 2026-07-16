@@ -12,8 +12,29 @@ from collections import OrderedDict
 from collections.abc import Iterable
 
 import flask
-import babel
-import babel.core
+try:
+    import babel
+    import babel.core
+except ImportError:
+    import types as _types
+    babel = _types.ModuleType('babel')
+    babel.core = type('core', (), {'UnknownLocaleError': ValueError})
+
+    class _Locale:
+        language: str = 'en'
+        territory: str = ''
+        @staticmethod
+        def parse(name: str, sep: str = '-') -> '_Locale':
+            parts = name.split(sep, 1)
+            loc = _Locale()
+            loc.language = parts[0]
+            if len(parts) > 1:
+                loc.territory = parts[1]
+            return loc
+        def __str__(self) -> str:
+            return self.language + ('-' + self.territory if self.territory else '')
+
+    babel.Locale = _Locale  # type: ignore[assignment]
 
 import searx.plugins
 
