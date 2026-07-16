@@ -20,12 +20,20 @@ from urllib.parse import urlencode, urlparse, unquote
 import warnings
 import httpx
 
-from pygments import highlight
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters import HtmlFormatter  # pylint: disable=no-name-in-module
+try:
+    from pygments import highlight
+    from pygments.lexers import get_lexer_by_name
+    from pygments.formatters import HtmlFormatter  # pylint: disable=no-name-in-module
+except ImportError:
+    highlight = None
+    get_lexer_by_name = None
+    HtmlFormatter = None
 
-from whitenoise import WhiteNoise
-from whitenoise.base import Headers
+try:
+    from whitenoise import WhiteNoise
+    from whitenoise.base import Headers as _WhNoiseHeaders
+except ImportError:
+    WhiteNoise = None
 
 import flask
 
@@ -40,10 +48,11 @@ from flask import (
 from flask.wrappers import Response
 from flask.json import jsonify
 
-from flask_babel import (
-    Babel,
-    gettext,
-)
+try:
+    from flask_babel import Babel, gettext
+except ImportError:
+    Babel = None
+    gettext = lambda s: s  # noqa: E731 -- no-op i18n fallback
 
 import searx
 from searx.extended_types import sxng_request
@@ -157,7 +166,8 @@ def get_locale():
     return locale
 
 
-babel = Babel(app, locale_selector=get_locale)
+if Babel is not None:
+    babel = Babel(app, locale_selector=get_locale)
 
 
 def _get_browser_language(req, lang_list):
@@ -179,6 +189,10 @@ def _get_locale_rfc5646(locale):
 # code-highlighter
 @app.template_filter('code_highlighter')
 def code_highlighter(codelines, language=None, hl_lines=None, strip_whitespace=True, strip_new_lines=True):
+    if highlight is None:
+        # pygments not installed — return raw text
+        return '\n'.join(code for _, code in codelines) if codelines else ''
+
     if not language:
         language = 'text'
 
@@ -1384,23 +1398,22 @@ def init():
     limiter.initialize(app, settings)
 
 
-def static_headers(headers: Headers, _path: str, _url: str) -> None:
-    headers['Cache-Control'] = 'public, max-age=30, stale-while-revalidate=60'
-
-    for header, value in settings['server']['default_http_headers'].items():
-        # cast value to string, as WhiteNoise requires header values to be strings
-        headers[header] = str(value)
-
-
 app.wsgi_app = ProxyFix(app.wsgi_app)
-app.wsgi_app = WhiteNoise(
-    app.wsgi_app,
-    root=settings['ui']['static_path'],
-    prefix="static",
-    max_age=None,
-    allow_all_origins=False,
-    add_headers_function=static_headers,
-)
+if WhiteNoise is not None:
+    def _static_headers(headers: _WhNoiseHeaders, _path: str, _url: str) -> None:
+        headers['Cache-Control'] = 'public, max-age=30, stale-while-revalidate=60'
+        for header, value in settings['server']['default_http_headers'].items():
+            # cast value to string, as WhiteNoise requires header values to be strings
+            headers[header] = str(value)
+
+    app.wsgi_app = WhiteNoise(
+        app.wsgi_app,
+        root=settings['ui']['static_path'],
+        prefix="static",
+        max_age=None,
+        allow_all_origins=False,
+        add_headers_function=_static_headers,
+    )
 
 patch_application(app)
 

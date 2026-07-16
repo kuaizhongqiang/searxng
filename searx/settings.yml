@@ -16,7 +16,7 @@ search:
   autocomplete: ""
   autocomplete_min: 4
   favicon_resolver: ""
-  default_lang: "auto"
+  default_lang: ""
   ban_time_on_fail: 5
   max_ban_time_on_fail: 120
   suspended_times:
@@ -35,10 +35,10 @@ server:
   base_url: false
   limiter: false
   public_instance: false
-  secret_key: "ultrasecretkey"
+  secret_key: "ultrasecretkey"  # 覆盖: SEARXNG_SECRET 环境变量
   image_proxy: false
   http_protocol_version: "1.0"
-  method: "POST"
+  method: "GET"
   default_http_headers:
     X-Content-Type-Options: nosniff
     X-Download-Options: noopen
@@ -54,9 +54,9 @@ outgoing:
   pool_connections: 100
   pool_maxsize: 20
   enable_http2: true
-  # proxies:
-  #   all://:
-  #     - socks5://127.0.0.1:10808
+  proxies:
+    all://:
+      - socks5://127.0.0.1:10808
 
 ui:
   static_path: ""

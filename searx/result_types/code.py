@@ -18,11 +18,22 @@ __all__ = ["Code"]
 
 import typing as t
 
-from pygments import highlight  # pyright: ignore[reportUnknownVariableType]
-from pygments.lexers._mapping import LEXERS  # pyright: ignore[reportMissingTypeStubs]
-from pygments.lexers import guess_lexer, get_lexer_by_name, guess_lexer_for_filename
-from pygments.util import ClassNotFound
-from pygments.formatters import HtmlFormatter  # pylint: disable=no-name-in-module
+try:
+    from pygments import highlight  # pyright: ignore[reportUnknownVariableType]
+    from pygments.lexers._mapping import LEXERS  # pyright: ignore[reportMissingTypeStubs]
+    from pygments.lexers import guess_lexer, get_lexer_by_name, guess_lexer_for_filename
+    from pygments.util import ClassNotFound
+    from pygments.formatters import HtmlFormatter  # pylint: disable=no-name-in-module
+except ImportError:
+    import types
+    # pygments not installed — provide minimal stubs
+    highlight = lambda code, lexer, formatter: code  # type: ignore[assignment]  # noqa: E731
+    LEXERS = {}  # type: ignore[assignment]
+    guess_lexer = None  # type: ignore[assignment]
+    get_lexer_by_name = None  # type: ignore[assignment]
+    guess_lexer_for_filename = None  # type: ignore[assignment]
+    ClassNotFound = Exception  # type: ignore[assignment,misc]
+    HtmlFormatter = None  # type: ignore[assignment]
 
 from ._base import MainResult
 
