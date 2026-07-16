@@ -70,19 +70,19 @@ def get_official_locales(
 
 
 def get_engine_locale(
-    query_locale: str | None,
-    engine_locales: dict[str, str] | set[str],
-    default_locale: str = '',
+    searxng_locale: str,
+    engine_locales: dict[str, str],
+    default: str | None = None,
 ) -> str | None:
-    if query_locale is None or not engine_locales:
-        return None
-    if query_locale in engine_locales:
-        return query_locale
-    lang = query_locale.split('-')[0]
+    if not engine_locales:
+        return default
+    if searxng_locale in engine_locales:
+        return searxng_locale
+    lang = searxng_locale.split('-')[0]
     for key in engine_locales:
         if key.startswith(lang):
             return key
-    return default_locale or lang
+    return default or lang
 
 
 def build_engine_locales(engine_traits: dict[str, dict]) -> dict[str, str]:
